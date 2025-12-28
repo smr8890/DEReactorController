@@ -143,7 +143,7 @@ function bestInputRate(info, bestSatRate)
         tempRatio = 1
     end
     local normalRate =
-        tempRatio * math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.935
+        tempRatio * math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.85
 
     -- 温度超过 10000 时，额外输入能量用于压温
     if info.temperature > 10000 then
