@@ -287,9 +287,11 @@ function main()
     --------------------------------
     -- stopping 状态维稳
     --------------------------------
+    info = reactorInfo()
     while info.status == "stopping" do
         -- 继续补能，防止护盾塌陷
-        setIn(bestInputRate(reactorInfo(), 0.99))
+        info = reactorInfo()
+        setIn(bestInputRate(info, 0.99))
         sleep0()
     end
 end

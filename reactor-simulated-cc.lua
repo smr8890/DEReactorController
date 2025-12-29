@@ -40,7 +40,7 @@ maxEnergySaturation = startInfo.maxEnergySaturation
 u = 2910897 / math.sqrt(686339028913329000)
 v = 1 / 2910897 ^ (1 / 3)
 fuelCoe = 1.3 / maxFuelConversion -- convLVL=conv*fuelCoe-0.3
-function cbrt(x)              -- cbrt for neg/pos
+function cbrt(x)                  -- cbrt for neg/pos
   if x < 0 then
     return -(-x) ^ (1 / 3)
   else
@@ -67,7 +67,7 @@ function bestInputRate(info, bestSatRate)
   local actualSatRate = info.energySaturation / maxEnergySaturation
   local satRate = math.min(actualSatRate, bestSatRate) -- If actually having lower sat rate and need more energy
   local normalRate = math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.95
-  if info.temperature > 8000 then                     -- If extra charge required
+  if info.temperature > 8000 then                      -- If extra charge required
     local extraTemp = info.temperature - 8000
     local tempCoe = 1 + extraTemp * extraTemp * 0.0000025
     return normalRate * tempCoe
@@ -105,7 +105,8 @@ function main()
       info = reactorInfo()
       if info.status == "running" then break end
       if info.temperature >= 2000 and info.fieldStrength >= info.maxFieldStrength * 0.49 and info.energySaturation >= info.maxEnergySaturation * 0.49 then
-        reactor.activateReactor() end
+        reactor.activateReactor()
+      end
       sleep0()
     end
   end
@@ -151,8 +152,10 @@ function main()
     setOut(bestOutputRate(info, 0.99))
     sleep0()
   end
+  info = reactorInfo()
   while info.status == "stopping" do
-    setIn(bestInputRate(reactorInfo(), 0.99))
+    info = reactorInfo()
+    setIn(bestInputRate(info, 0.99))
     sleep0()
   end
 end
