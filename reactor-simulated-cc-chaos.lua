@@ -50,18 +50,15 @@ end
 -------------------------------------------------
 -- 预测 / 数学模型（反应堆最优运行核心）
 -------------------------------------------------
-
+startInfo = reactorInfo()
 -- 最大燃料转化量
 -- 144（mB/锭） * 9 * 8 = 10368
-maxFuelConversion = 144 * 9 * 8
+-- maxFuelConversion = 144 * 9 * 8
+maxFuelConversion = startInfo.maxFuelConversion
 
 -- 最大能量饱和度
-maxEnergySaturation = maxFuelConversion * 96450.61728395062
-
-
--- 数学常量（用于拟合 DE 反应堆行为曲线）
-u = 2910897 / math.sqrt(686339028913329000)
-v = 1 / 2910897 ^ (1 / 3)
+-- maxEnergySaturation = maxFuelConversion * 96450.61728395062
+maxEnergySaturation = startInfo.maxEnergySaturation
 
 -- 燃料消耗系数，用于归一化 fuelConversion
 -- convLVL = fuelConversion * fuelCoe - 0.3
@@ -81,21 +78,6 @@ end
 -- 计算【最优能量饱和度比例】
 -- 返回值范围应在 (0,1)
 -- 含义：energySaturation / maxEnergySaturation
-function bestEnergySaturationRate(info)
-    -- 当前燃料阶段（归一化）
-    local A = info.fuelConversion * fuelCoe - 0.3
-
-    -- 中间变量（数学模型的一部分）
-    local kA = 1310000 * A
-    local cA = 6550000 * A - 6333295
-
-    -- 判别式相关项
-    local utr = u * (kA - 1266659) * math.sqrt(3291659 - kA)
-
-    -- 最终得到最优饱和度比例
-    return 1 + v * (cbrt(cA + utr) + cbrt(cA - utr))
-end
-
 -- 解三次方程 ax^3 + bx^2 + cx + d = 0,计算【最优能量饱和度比例】
 function sloveBestEnergySaturationRate(a, b, c, d)
     local A = b / a
