@@ -123,19 +123,11 @@ function bestInputRate(info, bestSatRate)
     local tempRatio = 11
     if info.temperature < 8000 then
         tempRatio = 1
+    elseif info.temperature > 10000 then
+        tempRatio = 1 + (info.temperature - 8000) ^ 2 * 0.0000025
     end
     local normalRate =
         tempRatio * math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.93
-
-    -- 温度超过 10000 时，额外输入能量用于压温
-    if info.temperature > 10000 then
-        local extraTemp = info.temperature - 10000
-
-        -- 温度平方增长，防止温度失控
-        local tempCoe = 1 + extraTemp * extraTemp * 0.0000025
-
-        return normalRate * tempCoe
-    end
 
     return normalRate
 end

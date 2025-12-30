@@ -114,8 +114,8 @@ function main()
     end
   end
 
-  --启动前温度>8000时，先降温至8000以下
-  while info.status == "running" and info.temperature > 8000 do
+  --启动前温度>8100时，先降温至8100以下
+  while info.status == "running" and info.temperature > 8100 do
     info = reactorInfo()
     setIn(bestInputRate(info, 0.99))
     setOut(bestOutputRate(info, 0.99))
