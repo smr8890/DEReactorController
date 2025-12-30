@@ -125,7 +125,7 @@ function bestInputRate(info, bestSatRate)
         tempRatio = 1
     end
     local normalRate =
-        tempRatio * math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.9
+        tempRatio * math.max(1 - satRate, 0.01) * baseMaxGen / 10.923556 / 0.93
 
     -- 温度超过 10000 时，额外输入能量用于压温
     if info.temperature > 10000 then
@@ -166,6 +166,11 @@ end
 -- 主控制逻辑
 ------------------------
 function main()
+    --启动监控
+    if multishell.getTitle(multishell.getCount()) ~= "monitor" then
+        shell.run("bg", "monitor.lua")
+    end
+
     local info = reactorInfo()
 
     -- 启动前检查燃料是否足够
@@ -209,6 +214,13 @@ function main()
     --------------------------------
     -- 正常运行循环
     --------------------------------
+    --启动前场强<15%时，先升场强至15%以上
+    while info.status == "running" and info.fieldStrength <= info.maxFieldStrength * 0.15 do
+        info = reactorInfo()
+        -- setOut(0)
+        setIn(64000000)
+        sleep0()
+    end
     while info.status == "running" do
         info = reactorInfo()
 
@@ -218,9 +230,9 @@ function main()
             break
         end
 
-        -- 紧急条件：高温或护盾过低
+        -- 紧急条件：高温或场强过低
         if info.temperature >= 10005
-            or info.fieldStrength <= info.maxFieldStrength * 0.02
+            or info.fieldStrength <= info.maxFieldStrength * 0.15
         then
             setOut(0)
             setIn(64000000)
@@ -288,12 +300,15 @@ function main()
     -- stopping 状态维稳
     --------------------------------
     info = reactorInfo()
+    setOut(0)
     while info.status == "stopping" do
         -- 继续补能，防止护盾塌陷
         info = reactorInfo()
         setIn(bestInputRate(info, 0.99))
         sleep0()
     end
+    setIn(0)
+    print("Reactor stopped.")
 end
 
 -- 启动主程序

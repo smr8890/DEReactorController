@@ -39,30 +39,22 @@ function sleep0()
     if not lastSleep or os.clock() > lastSleep then
         os.sleep(0)
     else
-        os.sleep(0.05)
+        os.sleep(0.1)
     end
     lastSleep = os.clock()
 end
 
 function main()
     if monitor then
-        sleep(0.5)
         print("Monitor is running.")
         --监控主循环
         local info = reactorInfo()
-
-        while info.status ~= "cold" do
+        while true do
             info = reactorInfo()
             local input = inGate.getFlow()
             local output = outGate.getFlow()
             statusDisplay(info, input, output)
             sleep0()
-        end
-
-        --最终停机
-        if info.status == "cold" then
-            monitor.clear()
-            monitorWrite(1, 1, "Reactor stopped.\n")
         end
 
         print("Monitor stopped.")

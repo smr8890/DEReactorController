@@ -90,6 +90,9 @@ function sleep0()
 end
 
 function main()
+  if multishell.getTitle(multishell.getCount()) ~= "monitor" then
+    shell.run("bg", "monitor.lua")
+  end
   local info = reactorInfo()
   if info.fuelConversion > autoStopFuel then
     print("Not enough fuel, won't start.")
@@ -109,6 +112,14 @@ function main()
       end
       sleep0()
     end
+  end
+
+  --启动前温度>8000时，先降温至8000以下
+  while info.status == "running" and info.temperature > 8000 do
+    info = reactorInfo()
+    setIn(bestInputRate(info, 0.99))
+    setOut(bestOutputRate(info, 0.99))
+    sleep0()
   end
   while info.status == "running" do
     info = reactorInfo()
@@ -153,11 +164,14 @@ function main()
     sleep0()
   end
   info = reactorInfo()
+  setOut(0)
   while info.status == "stopping" do
     info = reactorInfo()
     setIn(bestInputRate(info, 0.99))
     sleep0()
   end
+  setIn(0)
+  print("Reactor stopped.")
 end
 
 main()
