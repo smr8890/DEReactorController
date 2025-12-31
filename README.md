@@ -1,24 +1,41 @@
 # DEReactorController
-Computer Craft: Tweaked script for controlling Draconic Evolution Reactor
-# Usage
-Connect computer (CC:T) to
-- one reactor component(injector or stabilizer)
-- one flux gate for energy output
-- one flux gate for energy input
+用于控制 **龙之进化 神龙反应堆** 的 **Computer Craft: Tweaked** 脚本，适用于默认配置下最大体积满燃料的龙堆。
 
-Upload `reactor-simulated-cc.lua` to the computer
+`reactor-simulated-cc.lua`为8000C版本，适用于发电；`reactor-simulated-cc-chaos.lua`为10000C版本，适用于生产混沌残片。
 
-Edit the config part of the script and fill in peripheral IDs
 
-Ensure 10368 mb fuel (8 awaken draconium blocks in inventory or 10368.0 total in forth bar on GUI) in the reactor.
 
-(idk if it works setting the maxFuelConversion in the Predict section to actual total fuel amount.)
+> [!WARNING]
+>
+> 如运行10000C的碎片堆，应尽量使用龙研自己的龙球（能量核心）供能，如使用其他模组的储能（如mek的疏导矩阵），在进入游戏时可能会因为加载不同步，能量供应不及时，造成反应堆失控！！！
 
-Run the script and the reactor will be started.
+# 使用方法
 
-Optional: Rename the script file to startup.lua to make sure it takes control on server start.
+使用网络电缆和有线调制解调器将 CC:Tweaked 计算机连接到：
 
-# How
-This script works by calculating best energySaturation which keep the reactor at 8000℃, then calculate the generation and consumption rate.
+- 一个反应堆组件（反应堆能量注入器或反应堆稳定器）
+- 一个用于能量输出的能量阀门
+- 一个用于能量输入的能量阀门
 
-DE is kind that at a specific energy saturation level, the temperature naturally converges to a stable value.
+将 `reactor-simulated-cc.lua`和`reactor-simulated-cc-chaos.lua` 上传到计算机中。
+
+编辑脚本中的配置部分，填写正确的外设 ID。
+
+确保反应堆内填满燃料。
+
+运行脚本，反应堆将自动启动。
+
+（可选）自启动：将脚本文件重命名为 `startup.lua`，以确保服务器启动时自动接管反应堆控制。
+
+（可选）一键切换发电堆和碎片堆：上传`switch.lua`到计算机，将两个脚本文件分别重命名为`startup.lua`和`replace.lua`，运行`switch.lua`即可一键切换。
+
+（可选）显示器状态监控：上传`monitor.lua`到计算机，将大小至少为3*2的显示器连接到计算机，控制脚本启动时会自动寻找显示器输出反应堆监控数据。
+
+
+
+# 工作原理
+
+该脚本通过计算**最佳能量饱和度（energySaturation，能量储量/ 最大能量储量）**，使反应堆温度稳定在 **目标温度**，随后计算能量的输入输出速率。
+
+神龙反应堆具有这样的特性：
+ 在某一特定的能量饱和度下，温度会自然收敛并稳定在一个固定值。
